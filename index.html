@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html ng-app="blackBox">
+<head>
+  <title>BLKBOX</title>
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="Blkbox is an agency.">
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular.min.js"></script>
+  <script   src="https://code.jquery.com/jquery-1.12.3.min.js" integrity="sha256-aaODHAgvwQW1bFOGXMeX+pC4PZIPsvn2h1sArYOhgXQ="   crossorigin="anonymous"></script>
+</head>
+<body ng-controller="mainController">
+  <header>
+    <span class="logo">blkbox</span>
+    <i class="fa fa-bars" ng-click="openNav()" ng-class="{ 'on': navOpen == true }"></i>
+  </header>
+  <div class="menu" ng-class="{ 'nav-open': navOpen == true }">
+    <div class="nav-item">
+      &#8212; {{ menu.item }}
+    </div>
+    <div class="nav-copy">
+      {{ menu.copyLine1 }}<br>
+      {{ menu.copyLine2 }}
+    </div>
+    <div class="nav-contact">
+      {{ menu.contactCopy }} <a href="mailto:{{ contact.email }}">{{ menu.contactLink}}</a>
+    </div>
+    <div class="socials">
+      <a href="{{ footer.facebookLink }}" target="_blank"><i class="fa {{ footer.facebookIcon }}"></i></a>
+      <a href="{{ footer.twitterLink }}" target="_blank"><i class="fa {{ footer.twitterIcon }}"></i></a>
+      <a href="{{ footer.instagramLink }}" target="_blank"><i class="fa {{ footer.instagramIcon }}"></i></a>
+      <a href="{{ footer.tumblrLink }}" target="_blank"><i class="fa {{ footer.tumblrIcon }}"></i></a>
+    </div>
+  </div>
+  <div class="slide" ng-repeat="slide in slides" ng-class="{ 'video-slide': slide.video }" ng-click="showVideo()">
+    <div class="video-holder" ng-if="slide.video">
+      <video ng-if="slide.video" data-src="{{trustSrc(slide.video)}}" autoplay></video>
+      <img src="images/pause.png" height="113" width="113" alt="pause" class="pause">
+      <img src="images/play.png" height="113" width="113" alt="play" class="play">
+    </div>
+    <div class="image-holder" ng-if="slide.image">
+      <img src="{{ slide.image }}" alt="{{ slide.title }}" ngif="slide-image">
+    </div>
+    <div class="still-holder" ng-if="slide.still" ng-if="slide.still">
+      <img src="{{ slide.still }}" alt="{{ slide.title }}" ng-if="slide.still">
+    </div>
+    <div class="overlay"></div>
+    <div class="text-holder">    
+      <div class="pretitle">{{ slide.preTitle }}</div>
+      <div class="title">{{ slide.title }}</div>
+      <div class="posttitle">{{ slide.postTitle }}</div>
+      <div class="action">{{ slide.action }}</div>
+    </div>
+  </div>
+  <div class="slide white-bg">
+    <div class="title contact-title">{{ contact.title }}</div>
+    <div class="posttitle contact-posttitle">{{ contact.postTitle }}</div>
+    <a href="mailto:{{ contact.email }}" class="button">{{ contact.button }}</a>
+  </div>
+  <footer class="footer">
+    <div class="left">
+      <div>{{ footer.company }} <br class="mobile-only"><span class="desktop-only">//</span> {{ footer.rights }}</div>
+      <div>{{ footer.location }}</div>
+    </div>
+    <div class="center">
+      <div>{{ footer.preCreator }} <a href="{{ footer.creatorLink }}" target="_blank">{{ footer.creator }}</span></div>
+    </div>
+    <div class="right">
+      <a href="{{ footer.facebookLink }}" target="_blank"><i class="fa {{ footer.facebookIcon }}"></i></a>
+      <a href="{{ footer.twitterLink }}" target="_blank"><i class="fa {{ footer.twitterIcon }}"></i></a>
+      <a href="{{ footer.instagramLink }}" target="_blank"><i class="fa {{ footer.instagramIcon }}"></i></a>
+      <a href="{{ footer.tumblrLink }}" target="_blank"><i class="fa {{ footer.tumblrIcon }}"></i></a>
+    </div>
+  </footer>
+  <script type="text/javascript" src="app.js"></script>
+  <script>
+    function loadGifs() {
+      var slides = document.querySelectorAll('.slide');
+      for (var n = 0; n < slides.length; n++) {
+        slides[n].addEventListener('mouseover', function() {
+          if (this.querySelector('.image-holder')) {
+            var data = this.querySelector('.image-holder img').getAttribute('src');
+            this.querySelector('.image-holder img').setAttribute('src', data);
+          }
+        }, false);
+      }
+    }
+    function showVideo() {
+      var slides = document.querySelectorAll('.slide');
+      for (var n = 0; n < slides.length; n++) {
+        slides[n].addEventListener('click', function() {
+          if (this.querySelector('.video-holder')) {
+            var textHolder = this.querySelector('.text-holder'),
+                stillHolder = this.querySelector('.still-holder'),
+                imageHolder = this.querySelector('.image-holder'),
+                overlay = this.querySelector('.overlay'),
+                data = this.querySelector('.video-holder video').getAttribute('data-src');
+            if (!this.querySelector('.video-holder video').getAttribute('src')) {
+              this.querySelector('.video-holder video').currenTime = 0;
+              this.querySelector('.video-holder video').setAttribute('src', data);
+            }
+            $(textHolder).addClass('hide');
+            $(stillHolder).addClass('hide');
+            $(imageHolder).addClass('hide');
+            $(overlay).addClass('hide');
+          }
+        }, false);
+      }
+    }
+    function videoEnd() {
+      var videos = document.querySelectorAll('video');
+      for (var n = 0; n < videos.length; n++) {
+        videos[n].addEventListener('ended', function() {
+
+        }, false);
+      }
+    }
+
+    function playPause() {
+      var videos = document.querySelectorAll('video');
+      for (var n = 0; n < videos.length; n++) {
+        videos[n].addEventListener('click', function() {
+          if (this.currentTime >= 0 && !this.paused) {
+            this.pause();
+            this.parentElement.querySelector('.play').style.display = 'block';
+            this.parentElement.querySelector('.pause').style.display = 'none';
+          } else if (this.paused) {
+            this.play();
+            this.parentElement.querySelector('.play').style.display = 'none';
+          }
+        }, false);
+        videos[n].addEventListener('mouseover', function() {
+          if (this.currentTime >= 0 && !this.paused) {
+            this.parentElement.querySelector('.pause').style.display = 'block';
+          } else if (this.paused) {
+            this.parentElement.querySelector('.pause').style.display = 'none';
+          }
+        }, false);
+        videos[n].addEventListener('mouseout', function() {
+          this.parentElement.querySelector('.pause').style.display = 'none';
+        }, false);
+      }
+    }
+    window.addEventListener('load', loadGifs);
+    window.addEventListener('load', showVideo);
+    window.addEventListener('load', videoEnd);
+    window.addEventListener('load', playPause);
+  </script>
+</body>
+</html>
